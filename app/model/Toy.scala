@@ -15,4 +15,13 @@ final case class Toy(
 
 final class ToyTable(tag: Tag) extends Table[Toy](tag, "TOY"){
 
+  def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+  def code = column[String]("code")
+  def name = column[String]("name")
+  def price = column[Double]("price")
+  def priceUnit = column[String]("priceUnit")
+  def deposit = column[Double]("deposit")
+  def note = column[String]("note")
+
+  def * = (id, code, name, price, priceUnit, deposit, note) <> (Toy.tupled, Toy.unapply)
 }
