@@ -13,7 +13,10 @@ GET     /message                    controllers.AsyncController.message
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 
 #toy routing
-GET     /toys
+GET     /toys                       controllers.ToyController.list
+GET     /toy/:code                  controllers.ToyController.show(code:String)
+POST    /toy                        controllers.ToyController.create
+PUT     /toy/:code                  controllers.ToyController.update
 
 #user routing
 
