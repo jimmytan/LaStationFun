@@ -1,8 +1,10 @@
 package controllers
 
 import model.{Toy, ToyTable}
+import play.api.libs.json._
 import play.api.mvc.{Action, Controller}
 import slick.jdbc.PostgresProfile.api._
+import play.api.libs.functional.syntax._
 
 import scala.concurrent.Future
 
@@ -11,7 +13,20 @@ import scala.concurrent.Future
   */
 object ToyController extends Controller{
 
+  implicit val toyRead: Reads[Toy] = (
+    (JsPath \ "id").read[Long] and
+      (JsPath \ "code").read[String] and
+      (JsPath \ "name").read[String] and
+      (JsPath \ "price").read[Double] and
+      (JsPath \ "priceUnit").read[String] and
+      (JsPath \ "deposit").read[Double] and
+      (JsPath \ "note").read[String]
+  )(Toy.apply _)
+
+
   private val db = Database.forConfig("db")
+
+
   def index = Action{
     lazy val toys = TableQuery[ToyTable]
     val toySelect: DBIO[Seq[Toy]] = toys.result
@@ -26,6 +41,11 @@ object ToyController extends Controller{
   }
 
   def show = Action{
+    Ok("Your new application is ready.")
+  }
+
+  def create = Action(parse.json){
+    
     Ok("Your new application is ready.")
   }
 
