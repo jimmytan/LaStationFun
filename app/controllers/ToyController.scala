@@ -24,11 +24,10 @@ object ToyController extends Controller{
   )(Toy.apply _)
 
 
-  private val db = Database.forConfig("db")
-
+  val db = Database.forConfig("db")
+  val toys = TableQuery[ToyTable]
 
   def index = Action{
-    lazy val toys = TableQuery[ToyTable]
     val toySelect: DBIO[Seq[Toy]] = toys.result
     val toyFuture: Future[Seq[Toy]] = db.run(toySelect)
     Ok("Your new application is ready.")
@@ -40,12 +39,19 @@ object ToyController extends Controller{
     Ok("Your new application is ready.")
   }
 
-  def show = Action{
+  def show(code: String) = Action{
     Ok("Your new application is ready.")
   }
 
-  def create = Action(parse.json){
-    
+  def create = Action(parse.json){  request =>
+    val toyJson = request.body
+    val toy = toyJson.as[Toy]
+    val insert = toys += toy
+    val result = db.run(insert)
+    Ok("new toy is created ")
+  }
+
+  def update(code: String) = Action{
     Ok("Your new application is ready.")
   }
 
