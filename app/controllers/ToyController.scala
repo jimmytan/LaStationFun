@@ -1,5 +1,7 @@
 package controllers
 
+import javax.inject.{Inject, Singleton}
+
 import model.{Toy, ToyTable}
 import play.api.libs.json._
 import play.api.mvc.{Action, Controller}
@@ -11,7 +13,8 @@ import scala.concurrent.Future
 /**
   * Created by wenjuntan on 2017-03-07.
   */
-object ToyController extends Controller{
+@Singleton
+class ToyController @Inject() extends Controller{
 
   implicit val toyRead: Reads[Toy] = (
     (JsPath \ "id").read[Long] and
@@ -24,7 +27,7 @@ object ToyController extends Controller{
   )(Toy.apply _)
 
 
-  val db = Database.forConfig("db")
+  val db = Database.forConfig("lafundb")
   val toys = TableQuery[ToyTable]
 
   def index = Action{

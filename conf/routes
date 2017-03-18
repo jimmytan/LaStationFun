@@ -16,7 +16,7 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 GET     /toys                       controllers.ToyController.list
 GET     /toy/:code                  controllers.ToyController.show(code: String)
 PUT    /toy                        controllers.ToyController.create
-POST    /toy/:code                  controllers.ToyController.update
+POST    /toy/:code                  controllers.ToyController.update(code: String)
 
 #user routing
 
