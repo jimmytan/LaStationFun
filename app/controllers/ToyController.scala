@@ -2,12 +2,14 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import model.{Toy, ToyTable}
 import play.api.libs.json._
 import play.api.mvc.{Action, Controller}
 import slick.jdbc.PostgresProfile.api._
 import play.api.libs.functional.syntax._
 
+import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.Future
 
 /**
@@ -26,20 +28,25 @@ class ToyController @Inject() extends Controller{
       (JsPath \ "note").read[String]
   )(Toy.apply _)
 
+  implicit val toyWrite: Writes[Toy] = (
+    (JsPath \ "id").write[Long] and
+      (JsPath \ "code").write[String] and
+      (JsPath \ "name").write[String] and
+      (JsPath \ "price").write[Double] and
+      (JsPath \ "priceUnit").write[String] and
+      (JsPath \ "deposit").write[Double] and
+      (JsPath \ "note").write[String]
+    )(unlift(Toy.unapply))
+
 
   val db = Database.forConfig("lafundb")
   val toys = TableQuery[ToyTable]
 
-  def index = Action{
+  def list = Action.async{
     val toySelect: DBIO[Seq[Toy]] = toys.result
     val toyFuture: Future[Seq[Toy]] = db.run(toySelect)
-    Ok("Your new application is ready.")
-  }
-
-
-  def list = Action{
-
-    Ok("Your new application is ready.")
+    toyFuture.map(toys => Ok(Json.toJson(toys)))
+    
   }
 
   def show(code: String) = Action{
